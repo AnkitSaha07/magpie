@@ -111,7 +111,7 @@ scalar s15_exo_scp Exogenous microbial protein target on  (1) / 1 /;
 scalar s15_exo_alcohol Exogenous alcohol target on (1) / 1 /;
 scalar s15_alc_scen Scenario target for the inclusion of alcohol in the EAT-Lancet diet (1)  / 0.014 /;
 
-scalar s15_rum_share_fadeout_india_strong   switch for stronger ruminant fadeout in India (binary) / 1 /;
+scalar s15_rum_share_fadeout_india_strong   switch for stronger ruminant fadeout in India (binary) / 0 /;
 
 scalar s15_milk_share_fadeout_india     switch for milk fadeout in India (binary) / 1 /;
 

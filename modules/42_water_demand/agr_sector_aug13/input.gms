@@ -34,9 +34,9 @@ s42_efp_targetyear                 Environmental flow policy target year  / 2040
 
 s42_env_flow_base_fraction         Fraction of available water that is reserved for the environment where no EFP policy is implemented (1) / 0.05 /
 s42_env_flow_fraction              Fraction of available water that is reserved for under protection policies (1) / 0.2 /
-s42_pumping                        Switch to activate pumping cost settings (1) / 0 /
+s42_pumping                        Switch to activate pumping cost settings (1) / 1 /
 s42_multiplier_startyear           Year from which pumping costs multiplier will be implemented (1) / 1995 /
-s42_multiplier                     multiplier to change pumping costs for sensitivity analysis takes numeric values (1)  / 0 /
+s42_multiplier                     multiplier to change pumping costs for sensitivity analysis takes numeric values (1)  / 1 /
 ;
 
 $setglobal c42_watdem_scenario  cc
