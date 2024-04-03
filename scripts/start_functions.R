@@ -1,4 +1,4 @@
-# |  (C) 2008-2023 Potsdam Institute for Climate Impact Research (PIK)
+# |  (C) 2008-2024 Potsdam Institute for Climate Impact Research (PIK)
 # |  authors, and contributors see CITATION.cff file. This file is part
 # |  of MAgPIE and licensed under AGPL-3.0-or-later. Under Section 7 of
 # |  AGPL-3.0, you are granted additional permissions described in the
@@ -433,6 +433,18 @@ start_run <- function(cfg, scenario = NULL, codeCheck = TRUE, lock_model = TRUE)
   }
 
   # Yield calibration
+
+  # check for inconsistent settings
+  if((cfg$recalibrate == TRUE || cfg$recalibrate == "ifneeded")
+      && cfg$gms$s14_use_yield_calib == 0) {
+    stop("The combination of the switch configurations `cfg$recalibrate <- TRUE/ifneeded`
+          and `cfg$gms$s14_use_yield_calib <- 0` is inconsistent.
+          Please check the config and set `cfg$gms$s14_use_yield_calib <- 1` 
+          if yield calibration is desired, or `cfg$recalibrate <- FALSE` if not.
+          Note that the current default is to not use yield calibration.")
+  }
+
+  # decide if calibration is needed if "ifneeded" is specified
   calib_file <- "modules/14_yields/input/f14_yld_calib.csv"
   if(cfg$recalibrate=="ifneeded") {
     if(!file.exists(calib_file)) {

@@ -4,20 +4,89 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-
-## [Unreleased]
+## [4.7.2] - 2024-04-02
 
 ### changed
--
+- **21_trade** Revision of trade module. Replaced `cfg$gms$s21_trade_bal_damper` in favour of `cfg$gms$k_import21`, which allows for additional imports to maintain feasibility
+- **58_peatland** Threshold in equations changed from 1e-10 to 1e-8 to avoid rare divisions by zero
+- **70_livestock** if `c70_fac_req_regr` is set to `reg`: use of USDA/FAO values for historic factor requirements for livestock instead of using regression values and change of calibration year from 2005 to 2010 for regional factor requirements regression
+- **config** updated FSEC scenario config for revision and included new calibration file (after cost fix in preprocessing)
+- **scripts** modified output reporting for SEALS to account for forestry plantations
 
 ### added
--
+- **30_crop** Improved representation of cropland requiring relocation in response to introducing semi-natural habitat at the 1 km level based on high-resolution satellite imagery.
+- **config** added `.codeCheck` with additonal configuration when running `gms::codeCheck`
+- **scripts** add additional BII reporting variables in FSDP_collect.R
+- **scripts** added a new validation_cell.R output script that generates a pdf with the comparison of magpie land use and crop type outputs with LUH and MAPSPAM historical data at cellular resolution.
 
 ### removed
--
+- **core** removed no longer needed set `si` Suitability classes
 
 ### fixed
--
+- **52_carbon** i52_land_carbon_sink was not identical before 2020 for different RCPs. Fixed by setting to RCPBU until the year defined in sm_fix_cc.
+- **inputdata** currency fixed in historic value of production for crops and livestock which affects e.g. total labor costs and in turn hourly labor costs, bugfix in aggregation weight of capital cost share out of factor costs
+
+
+## [4.7.1] - 2024-02-28
+
+### changed
+- **15_food** Added improved EAT Lancet diet implementation (EAT 2p0)
+- **21_trade** s21_trade_bal_damper for roundwood changed from 0.75 to 0.65
+- **31_past** in grasslands_apr22 realization: changed structure of f31_pastr_suitability to align with ssp-rcp specific input data formulation. Changed input filename from cs3 to cs2. Added `cc`, `nocc` and `nocc_hist` options for `i31_manpast_suit` and changed input gams code from table to parameter. Climate scenario assignment moved from preloop.gms to input.gms. Removed pastSuit set in sets.gms as not needed anymore. Adjusted not_used.txt in both grasslands_apr22 and static realizations.
+- **default.cfg and scenario_config.csv** Default for cfg$gms$c56_emis_policy changed from `redd+natveg_nosoil` to `reddnatveg_nosoil`,i.e. timber plantations are excluded from carbon pricing by default
+- **default.cfg** changed default for `cfg$gms$s32_aff_prot` from 0 to 1
+- **default.cfg** changed default for `cfg$gms$s56_buffer_aff` from 0.2 to 0.5
+- **default.cfg** Default for cfg$gms$c56_cprice_aff changed from `forestry_vegc` to `secdforest_vegc`
+- **default.cfg** Default for cfg$gms$peatland changed from `on` to `v2`
+- **default.cfg** update default `cfg$gms$c56_pollutant_prices` and `cfg$gms$c60_2ndgen_biodem` to `R32M46-SSP2EU-NPi`
+- **default.cfg** update input data to rev 4.99 (new validation data, new EATLancet recommendations, new semi-natural vegtation cropland data)
+- **scenario_config.csv** removed erroneous setting `cc` from column `input`
+- **scenario_config.csv** settings for cfg$gms$s35_secdf_distribution in `ForestryEndo` and `ForestryExo` changed from `2` to `0`
+- **start_functions** Check if cfg$recalibrate is consistent with cfg$gms$s14_use_yield_calib
+
+### added
+- **32_forestry** new interfaces `vm_land_forestry`, `pcm_land_forestry` `vm_landexpansion_forestry` and `vm_landreduction_forestry`
+- **56_ghg_policy_** added new trajectories for R32M46
+- **60_bioenergy** added new trajectories for R32M46
+- **scripts** added peatland to output/extra/disaggregation.R
+
+### removed
+- **58_peatland** removed realization "on"
+- **default.cfg** Removed description of cfg$gms$c31_past_suit_scen since no longer needed due to changes in 31_past described below. Its function is now done by cfg$gms$c31_grassl_yld_scenario.
+
+### fixed
+- **21_trade** introduced s21_manna_from_heaven for fixing v21_manna_from_heaven to zero. Without fixing to zero, v21_manna_from_heaven was used unnecessarily in runs started with highres.R
+- **32_forestry** bugfix unit p32_observed_gs_reg
+- **32_forestry** keep c-density for timber plantations constant after rotation length to avoid unrealistic carbon sequestration in unharvested timber plantation
+- **35_natveg** bugfixes ac_est
+- **35_natveg** removed scaling of pm_carbon_density_ac
+- **52_carbon** bugfix acx long-term carbon density
+- **scripts** bugfix highres.R for bioenergy demand and GHG prices in coupled runs
+- **scripts** disaggregation_LUH2.R which no longer relies on the old raster-based write.magpie for nc files
+- **scripts** fixed disaggregation.R and disaggregation_LUH2.R to be used with 67k
+- **scripts** fixed memory spike leading to crashes in disaggregation.R
+- **scripts** fixed writing of NetCDF files in output/reportMAgPIE2SEALS.R
+
+
+## [4.7.0] - 2023-12-11
+
+### changed
+- **14_yields_and_config** The new default is to not use yield calibration factors from a calibration run. The switch s14_use_yield_calib can optionally reenable the use of yield calibration factors.
+- **36_employment** regression between hourly labor regression and GDP pc changed from linear to log-log
+- **inputdata** Now using inputdata rev4.94 which is based on 67420 cells (67k, previously 59k)
+- **scripts** For the emulator scripts select a different bioenergy demand variable that excludes bioenergy sources other than second generation bioenergy crops. Set the minimal bioenergy demand to zero. Both avoid artificial clustering of data points and allow for better fits.
+- **scripts** LUH2_disaggregation output script was modified. Specifically, flooded area was made compatible with the LUH definition, cropland and grazing land were added to the states.nc file, and specific naming/details (datatype,  zname, xname, and yname) were added when creating the .nc files.
+
+### added
+- **14_yields/config** Added option for considering impacts of land degradation on yields. If `s14_degradation` is switched to 1, MAgPIE will include cluster-specific information on the state of nature's contributions to people relevant for yields `./modules/14_yields/input/f14_yld_ncp_report.cs3`.
+- **18_residues** Included cluster-level residue realization, for cluster-level production of residues (but balancing of recycling and burning budgets remains at region-level, for computational lightness)
+- **32_forestry** new interface `vm_land_forestry`
+- **58_peatland** added realization "v2" with updated peatland map and GHG emission factors
+
+### fixed
+- **inputdata** There was a major bug (related to proj/terra) in the rev4.91 inputdata that was fixed with rev4.92
+- **inputdata** There was another bug (terra default na.rm changed) in the inputdata that was fixed with rev4.93
+- **scripts** Fixed a bug in NPI/NDC calculations leading to missing AD policies when run with 67k
 
 
 ## [4.6.11] - 2023-09-05
@@ -775,7 +844,10 @@ This release version is focussed on consistency between the MAgPIE setup and the
 First open source release of the framework. See [MAgPIE 4.0 paper](https://doi.org/10.5194/gmd-12-1299-2019) for more information.
 
 
-[Unreleased]: https://github.com/magpiemodel/magpie/compare/v4.6.11...develop
+[Unreleased]: https://github.com/magpiemodel/magpie/compare/v4.7.2...develop
+[4.7.2]: https://github.com/magpiemodel/magpie/compare/v4.7.1...v4.7.2
+[4.7.1]: https://github.com/magpiemodel/magpie/compare/v4.7.0...v4.7.1
+[4.7.0]: https://github.com/magpiemodel/magpie/compare/v4.6.11...v4.7.0
 [4.6.11]: https://github.com/magpiemodel/magpie/compare/v4.6.10...v4.6.11
 [4.6.10]: https://github.com/magpiemodel/magpie/compare/v4.6.9...v4.6.10
 [4.6.9]: https://github.com/magpiemodel/magpie/compare/v4.6.8...v4.6.9
